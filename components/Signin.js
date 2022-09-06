@@ -1,23 +1,25 @@
 import React from 'react';
+import Navbar from 'react-bootstrap/Navbar';
+import {
+  Button, Container, Nav,
+} from 'react-bootstrap';
 import { signIn } from '../utils/auth';
 
 function Signin() {
   return (
-    <div
-      className="text-center d-flex flex-column justify-content-center align-content-center"
-      style={{
-        height: '90vh',
-        padding: '30px',
-        maxWidth: '400px',
-        margin: '0 auto',
-      }}
-    >
-      <h1>Hi there!</h1>
-      <p>Click the button below to login!</p>
-      <button type="button" className="btn btn-primary btn-lg copy-btn" onClick={signIn}>
-        Sign In
-      </button>
-    </div>
+    <Navbar bg="light" variant="light">
+      <Container>
+        <Navbar.Brand href="/">Bill Share</Navbar.Brand>
+        <Nav className="justify-content-end flex-grow-1 pe-3">
+          <Nav.Link href="/">Home</Nav.Link>
+          <Nav.Link href="/bill/new">Add a bill</Nav.Link>
+          <Nav.Link href="/pages/about.js">About</Nav.Link>
+        </Nav>
+      </Container>
+      <Button type="button" className="rounded-pill" onClick={signIn}>
+        Log In
+      </Button>
+    </Navbar>
   );
 }
 

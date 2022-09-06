@@ -7,7 +7,7 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import { firebase } from '../client';
+import firebase from 'firebase';
 
 const AuthContext = createContext();
 
