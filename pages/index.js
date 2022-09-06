@@ -1,25 +1,58 @@
-import { signOut } from '../utils/auth';
+import React, { useEffect, useState } from 'react';
+import { Dropdown } from 'react-bootstrap';
 import { useAuth } from '../utils/context/authContext';
+import Chart from '../components/DoughnutChart';
+import { getBills } from '../api/billData';
 
 function Home() {
+  const [bills, setBills] = useState([]);
+  const [billData, setBillData] = useState(null);
+  const [showBill, setShowBill] = useState(false);
   const { user } = useAuth();
 
+  useEffect(() => {
+    setShowBill();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const callGetAllBills = () => {
+    getBills(user.uid).then(setBills);
+    setShowBill(false);
+    setBillData(null);
+  };
+
+  useEffect(() => {
+    callGetAllBills();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
-    <div
-      className="text-center d-flex flex-column justify-content-center align-content-center"
-      style={{
-        height: '90vh',
-        padding: '30px',
-        maxWidth: '400px',
-        margin: '0 auto',
-      }}
-    >
-      <h1>Hello {user.displayName}! </h1>
-      <p>Click the button below to logout!</p>
-      <button className="btn btn-danger btn-lg copy-btn" type="button" onClick={signOut}>
-        Sign Out
-      </button>
-    </div>
+    <>
+      <Dropdown>
+        <Dropdown.Toggle id="dropdown-custom-components">
+          View Bills
+        </Dropdown.Toggle>
+
+        <Dropdown.Menu>
+          {bills.map((bill, idx) => (
+            <Dropdown.Item
+              eventKey={idx}
+              onClick={() => {
+                setBillData(bill);
+                setShowBill(true);
+              }}
+            >
+              {bill.billName}
+            </Dropdown.Item>
+          ))}
+        </Dropdown.Menu>
+      </Dropdown>
+
+      <div className="doughnutChart">
+        {showBill && <Chart key={billData.firebaseKey} billObj={billData} onUpdate={callGetAllBills} />}
+      </div>
+
+    </>
   );
 }
 
