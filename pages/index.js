@@ -29,7 +29,7 @@ function Home() {
   return (
     <>
       <Dropdown>
-        <Dropdown.Toggle id="dropdown-custom-components">
+        <Dropdown.Toggle id="dropdown-custom-components" variant="">
           View Bills
         </Dropdown.Toggle>
 

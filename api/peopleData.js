@@ -15,20 +15,23 @@ const getPeoples = (uid) => new Promise((resolve, reject) => {
     .catch((error) => reject(error));
 });
 
-const deletePeoples = (firebaseKey) => new Promise((resolve, reject) => {
+const deleteSinglePeoples = (firebaseKey) => new Promise((resolve, reject) => {
   axios.delete(`${dbUrl}/people/${firebaseKey}.json`)
-    .then(() => resolve('deleted'))
-    .catch((error) => reject(error));
+    .then(() => {
+      getPeoples().then((peoplesArray) => resolve(peoplesArray));
+    })
+    .catch(reject);
 });
 
-const createPeoples = (peopleObj) => new Promise((resolve, reject) => {
+const createPeoples = (peopleObj, uid) => new Promise((resolve, reject) => {
   axios.post(`${dbUrl}/people.json`, peopleObj)
     .then((response) => {
       const payload = { firebaseKey: response.data.name };
       axios.patch(`${dbUrl}/people/${response.data.name}.json`, payload)
-        .then(resolve)
-        .catch(reject);
-    });
+        .then(() => {
+          getPeoples(uid).then((peoplesArr) => resolve(peoplesArr));
+        });
+    }).catch(reject);
 });
 
 const updatePeoples = (peopleObj) => new Promise((resolve, reject) => {
@@ -38,14 +41,14 @@ const updatePeoples = (peopleObj) => new Promise((resolve, reject) => {
 });
 
 const getSinglePeoples = (firebaseKey) => new Promise((resolve, reject) => {
-  axios.get(`${dbUrl}/people/${firebaseKey}.json`)
-    .then((response) => resolve(response.data))
+  axios.get(`${dbUrl}/people.json?orderBy="billId"&equalTo="${firebaseKey}"`)
+    .then((response) => resolve(Object.values(response.data)))
     .catch((error) => reject(error));
 });
 
 export {
   getPeoples,
-  deletePeoples,
+  deleteSinglePeoples,
   createPeoples,
   updatePeoples,
   getSinglePeoples,

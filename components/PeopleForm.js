@@ -6,6 +6,7 @@ import Form from 'react-bootstrap/Form';
 import { Button } from 'react-bootstrap';
 import { useAuth } from '../utils/context/authContext';
 import { updatePeoples, createPeoples } from '../api/peopleData';
+import { getBills } from '../api/billData';
 
 const initialState = {
   name: '',
@@ -16,9 +17,11 @@ const initialState = {
 function PeopleForm({ obj }) {
   const [formInput, setFormInput] = useState(initialState);
   const router = useRouter();
+  const [bills, setBills] = useState([]);
   const { user } = useAuth();
 
   useEffect(() => {
+    getBills(user.uid).then(setBills);
     if (obj.firebaseKey) setFormInput(obj);
   }, [obj, user]);
 
@@ -38,7 +41,7 @@ function PeopleForm({ obj }) {
     } else {
       const payload = { ...formInput, uid: user.uid };
       createPeoples(payload).then(() => {
-        router.push('/');
+        router.push(`/bill/${formInput.billId}`);
       });
     }
   };
@@ -80,6 +83,29 @@ function PeopleForm({ obj }) {
         />
       </FloatingLabel>
 
+      <FloatingLabel controlId="floatingSelect" label="Bill">
+        <Form.Select
+          aria-label="Bill"
+          name="billId"
+          onChange={handleChange}
+          className="mb-3"
+          required
+        >
+          <option value="">Select a Bill</option>
+          {
+              bills.map((bill) => (
+                <option
+                  key={bill.firebaseKey}
+                  value={bill.firebaseKey}
+                  selected={obj.billId === bill.firebaseKey}
+                >
+                  {bill.billName}
+                </option>
+              ))
+            }
+        </Form.Select>
+      </FloatingLabel>
+
       <Button type="submit">{obj.firebaseKey ? 'Update' : 'Create'} a Person</Button>
     </Form>
   );
@@ -91,6 +117,7 @@ PeopleForm.propTypes = {
     amount: PropTypes.string,
     dueDate: PropTypes.string,
     firebaseKey: PropTypes.string,
+    billId: PropTypes.string,
   }),
 };
 
