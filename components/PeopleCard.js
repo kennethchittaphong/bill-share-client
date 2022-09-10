@@ -3,12 +3,12 @@ import Card from 'react-bootstrap/Card';
 import Link from 'next/link';
 import Button from 'react-bootstrap/Button';
 import PropTypes from 'prop-types';
-import { deletePeoples } from '../api/peopleData';
+import { deleteSinglePeoples } from '../api/peopleData';
 
 function PeopleCard({ peopleObj, onUpdate }) {
   const deleteThisPerson = () => {
-    if (window.confirm('Delete $(peopleObj}?')) {
-      deletePeoples(peopleObj.firebaseKey).then(() => onUpdate());
+    if (window.confirm(`Delete ${peopleObj.name}?`)) {
+      deleteSinglePeoples(peopleObj.firebaseKey).then(() => onUpdate());
     }
   };
 
@@ -37,6 +37,7 @@ PeopleCard.propTypes = {
     dueDate: PropTypes.string,
     firebaseKey: PropTypes.string,
     uid: PropTypes.string,
+    billId: PropTypes.string,
   }).isRequired,
   onUpdate: PropTypes.func.isRequired,
 };

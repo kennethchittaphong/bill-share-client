@@ -11,6 +11,7 @@ const initialState = {
   billName: '',
   totalAmount: '',
   dueDate: '',
+  billId: '',
 };
 
 function BillForm({ obj }) {
@@ -18,7 +19,7 @@ function BillForm({ obj }) {
   const router = useRouter();
   const { user } = useAuth();
   const [inputFields, setInputFields] = useState([
-    { splitAmount: '' },
+    '',
   ]);
 
   const handleChange = (e) => {
@@ -31,16 +32,16 @@ function BillForm({ obj }) {
 
   const handleInputChange = (index, event) => {
     const values = [...inputFields];
-    if (event.target.name === 'splitAmount') {
-      values[index].splitAmount = event.target.value;
+    if (event.target.name === 'splitValues') {
+      values[index] = event.target.value;
     }
-
+    // console.log('split values ===', values);
     setInputFields(values);
   };
 
   const handleAddFields = () => {
     const values = [...inputFields];
-    values.push({ splitAmount: '' });
+    values.push('');
     setInputFields(values);
   };
   const handleRemoveFields = (index) => {
@@ -50,19 +51,27 @@ function BillForm({ obj }) {
   };
 
   useEffect(() => {
-    if (obj?.firebaseKey) setFormInput(obj);
+    if (obj?.firebaseKey) {
+      setFormInput(obj);
+      setInputFields(obj.splitValues);
+    }
   }, [obj, user]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    const splitValues = [];
+    for (let index = 0; index < inputFields.length; index++) {
+      const element = inputFields[index];
+      splitValues.push(parseInt(element, 10));
+    }
+    const payload = {
+      ...formInput, uid: user.uid, userDisplayName: user.displayName, splitValues,
+    };
     if (obj.firebaseKey) {
-      updateBill(formInput)
+      updateBill(payload)
         .then(() => router.push('/'));
     } else {
-      const totalAmount = formInput.totalAmount && formInput.totalAmount.split(',');
-      const payload = {
-        ...formInput, uid: user.uid, userDisplayName: user.displayName, totalAmount,
-      };
+      // const totalAmount = formInput.totalAmount && formInput.totalAmount.split(',');
       createBill(payload).then(() => {
         router.push('/');
       });
@@ -113,13 +122,16 @@ function BillForm({ obj }) {
               // eslint-disable-next-line react/no-array-index-key
               <Fragment key={`${inputField}~${index}`}>
                 <div className="form-group col-sm-6">
-                  <label htmlFor="splitAmount">Split Amount</label>
+                  <label htmlFor="splitValues">Split Amount</label>
                   <input
+                    // eslint-disable-next-line jsx-a11y/no-autofocus
+                    autoFocus="autoFocus"
                     type="text"
                     className="form-control"
-                    id="splitAmount"
-                    name="splitAmount"
-                    value={inputField.splitAmount}
+                    id="splitValues"
+                    name="splitValues"
+                    defaultValue={inputField}
+                    value={inputField.splitValues}
                     onChange={(event) => handleInputChange(index, event)}
                   />
                 </div>
@@ -156,6 +168,7 @@ BillForm.propTypes = {
   obj: PropTypes.shape({
     billName: PropTypes.string,
     totalAmount: PropTypes.string,
+    splitValues: PropTypes.string,
     dueDate: PropTypes.string,
     splitAmount: PropTypes.string,
     firebaseKey: PropTypes.string,

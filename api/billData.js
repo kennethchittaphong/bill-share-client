@@ -43,14 +43,17 @@ const updateBill = (billObj) => new Promise((resolve, reject) => {
 });
 
 // DELETE BILL
-const deleteBill = (firebaseKey) => new Promise((resolve, reject) => {
+// eslint-disable-next-line no-unused-vars
+const deleteBill = (firebaseKey, billId) => new Promise((resolve, reject) => {
   axios.delete(`${dbUrl}/bills/${firebaseKey}.json`)
-    .then(resolve)
-    .catch(reject);
+    .then(() => {
+      getBills().then((billsArr) => resolve(billsArr));
+    })
+    .catch((error) => reject(error));
 });
 
 const getBillPeoples = (firebaseKey) => new Promise((resolve, reject) => {
-  axios.get(`${dbUrl}/people.json?orderBy="bill_id"&equalTo="${firebaseKey}"`)
+  axios.get(`${dbUrl}/people.json?orderBy="billId"&equalTo="${firebaseKey}"`)
     .then((response) => resolve(Object.values(response.data)))
     .catch(reject);
 });
