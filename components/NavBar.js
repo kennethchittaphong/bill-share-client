@@ -11,15 +11,15 @@ export default function NavBar() {
     <Navbar bg="light" variant="light">
       <Container>
         <Navbar.Brand href="/">Bill Share</Navbar.Brand>
-        <Nav className="justify-content-end flex-grow-1 pe-3">
+        <Nav className="me-auto">
           <Nav.Link href="/">Home</Nav.Link>
           <Nav.Link href="/bill/new">Add a bill</Nav.Link>
           <Nav.Link href="/pages/about.js">About</Nav.Link>
         </Nav>
+        <Button type="button" className="rounded-pill btn-primary" onClick={signOut}>
+          Sign Out
+        </Button>
       </Container>
-      <Button type="button" className="rounded-pill" onClick={signOut}>
-        Sign Out
-      </Button>
     </Navbar>
   );
 }

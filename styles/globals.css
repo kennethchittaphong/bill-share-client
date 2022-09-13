@@ -20,3 +20,17 @@ a {
 body {
   background-color: white;
 }
+
+.btn-primary {
+  background-color: #09be1e;
+}
+
+.btn-primary:hover {
+  background-color: #7dee8a;
+}
+
+.container-div {
+  justify-content: center;
+  align-items: center;
+  display: flex;
+}

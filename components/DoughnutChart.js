@@ -48,18 +48,18 @@ function DoughnutChart({ billObj, onUpdate }) {
           <Doughnut data={data} />
         </div>
         <Link href={`/bill/edit/${billObj.firebaseKey}`} passHref>
-          <Button variant="info">EDIT</Button>
+          <Button variant="">EDIT</Button>
         </Link>
-        <Button variant="danger" onClick={deleteThisBill} className="m-2">
+        <Button variant="" onClick={deleteThisBill} className="m-2">
           DELETE
         </Button>
 
         <Link href="/people/new" passHref>
-          <Button variant="info">Add a person</Button>
+          <Button variant="">Add a person</Button>
         </Link>
 
         <Link href={`/bill/${billObj.firebaseKey}`} passHref>
-          <Button variant="info">people</Button>
+          <Button variant="">people</Button>
         </Link>
 
         <div className="text-center my-4">
