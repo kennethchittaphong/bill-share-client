@@ -6,23 +6,19 @@ import { getBills } from '../api/billData';
 
 function Home() {
   const [bills, setBills] = useState([]);
-  const [billData, setBillData] = useState(null);
-  const [showBill, setShowBill] = useState(false);
+  const [selectedBill, setSelectedBill] = useState();
   const { user } = useAuth();
 
-  useEffect(() => {
-    setShowBill();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const callGetAllBills = () => {
-    getBills(user.uid).then(setBills);
-    setShowBill(false);
-    setBillData(null);
+  const fetchBills = async () => {
+    const newBills = await getBills(user.uid);
+    setBills(newBills);
+    if (!bills.length && newBills.length) {
+      setSelectedBill(newBills[0]);
+    }
   };
 
   useEffect(() => {
-    callGetAllBills();
+    fetchBills();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -38,8 +34,7 @@ function Home() {
             <Dropdown.Item
               eventKey={idx}
               onClick={() => {
-                setBillData(bill);
-                setShowBill(true);
+                setSelectedBill(bill);
               }}
             >
               {bill.billName}
@@ -47,11 +42,7 @@ function Home() {
           ))}
         </Dropdown.Menu>
       </Dropdown>
-
-      <div className="doughnutChart">
-        {showBill && <Chart key={billData.firebaseKey} billObj={billData} onUpdate={callGetAllBills} />}
-      </div>
-
+      {selectedBill ? <Chart key={selectedBill} bill={selectedBill} onUpdate={fetchBills} /> : null}
     </>
   );
 }

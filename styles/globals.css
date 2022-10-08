@@ -29,8 +29,3 @@ body {
   background-color: #7dee8a;
 }
 
-.container-div {
-  justify-content: center;
-  align-items: center;
-  display: flex;
-}

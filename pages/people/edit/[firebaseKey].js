@@ -4,8 +4,8 @@ import { getSinglePeoples } from '../../../api/peopleData';
 import PeopleForm from '../../../components/PeopleForm';
 
 export default function EditPeople() {
-  const [editPeoples, setEditPeoples] = useState({});
   const router = useRouter();
+  const [editPeoples, setEditPeoples] = useState(JSON.parse(router.query.obj));
   const { firebaseKey } = router.query;
 
   useEffect(() => {

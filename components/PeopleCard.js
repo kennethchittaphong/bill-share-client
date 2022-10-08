@@ -18,8 +18,9 @@ function PeopleCard({ peopleObj, onUpdate }) {
         <Card.Title>{peopleObj.name}</Card.Title>
         <Card.Text>Amount owed: ${peopleObj.amount}</Card.Text>
         <Card.Text>Due date: {peopleObj.dueDate}</Card.Text>
+        <Card.Text>{peopleObj.paid ? 'Paid' : ''}</Card.Text>
 
-        <Link href={`/people/edit/${peopleObj.firebaseKey}`} passHref>
+        <Link href={{ pathname: `/people/edit/${peopleObj.firebaseKey}`, query: { obj: JSON.stringify(peopleObj) } }} passHref>
           <Button variant="info">EDIT</Button>
         </Link>
         <Button variant="danger" onClick={deleteThisPerson} className="m-2">
@@ -35,6 +36,7 @@ PeopleCard.propTypes = {
     name: PropTypes.string,
     amount: PropTypes.string,
     dueDate: PropTypes.string,
+    paid: PropTypes.string,
     firebaseKey: PropTypes.string,
     uid: PropTypes.string,
     billId: PropTypes.string,
