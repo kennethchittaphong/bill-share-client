@@ -2,6 +2,8 @@
 
 ![Homepage](https://user-images.githubusercontent.com/102437151/194699744-0b6a9414-c332-4c7d-ab2a-c745c77f755c.png)
 
+Splitting bills has never been easier with Bill Share! Split, share, and track your bills!
+
 ## Topics
 - [Get Started](#get-started)
 - [Starting the Project](#starting-the-project)
