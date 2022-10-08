@@ -11,11 +11,11 @@ $ cd bill-share
 ```
 
 ## Features
-Authentication - Users can login and logout of the application using Google.
-Users can add bills to track, split, or share payment amounts.
-Users are able to add people associated with the bill to track.
-Chart.js and boostrap used.
-React and reactstrap for Modals.
+- Authentication - Users can login and logout of the application using Google.
+- Users can add bills to track, split, or share payment amounts.
+- Users are able to add people associated with the bill to track.
+- Chart.js and boostrap used.
+- React and reactstrap for Modals.
 
 ## Planning
 - [ERD](https://dbdiagram.io/d/62f8600bc2d9cf52faa139dd)
