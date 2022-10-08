@@ -14,7 +14,6 @@ export default function NavBar() {
         <Nav className="me-auto">
           <Nav.Link href="/">Home</Nav.Link>
           <Nav.Link href="/bill/new">Add a bill</Nav.Link>
-          <Nav.Link href="/pages/about.js">About</Nav.Link>
         </Nav>
         <Button type="button" className="rounded-pill btn-primary" onClick={signOut}>
           Sign Out

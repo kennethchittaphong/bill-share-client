@@ -35,78 +35,58 @@ function PeopleForm({ obj }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (obj.firebaseKey) {
-      updatePeoples(formInput)
-        .then(() => router.push('/'));
+    if (formInput.firebaseKey) {
+      updatePeoples(formInput).then(() => router.push('/'));
     } else {
       const payload = { ...formInput, uid: user.uid };
       createPeoples(payload).then(() => {
-        router.push(`/bill/${formInput.billId}`);
+        router.push('/');
       });
     }
   };
 
   return (
     <Form onSubmit={handleSubmit}>
-      <h2 className="text-white mt-5">{obj.firebaseKey ? 'Update' : 'Create'} a Person</h2>
+      <h2 className="text-white mt-5">{formInput.firebaseKey ? 'Update' : 'Create'} a Person</h2>
 
       <FloatingLabel controlId="floatingInput1" label="Name" className="mb-3">
-        <Form.Control
-          type="text"
-          placeholder="Enter Name"
-          name="name"
-          value={formInput.name}
-          onChange={handleChange}
-          required
-        />
+        <Form.Control type="text" placeholder="Enter Name" name="name" value={formInput.name} onChange={handleChange} required />
       </FloatingLabel>
 
       <FloatingLabel controlId="floatingInput3" label="Amount" className="mb-3">
-        <Form.Control
-          type="text"
-          placeholder="Enter Amount"
-          name="amount"
-          value={formInput.amount}
-          onChange={handleChange}
-          required
-        />
+        <Form.Control type="text" placeholder="Enter Amount" name="amount" value={formInput.amount} onChange={handleChange} required />
       </FloatingLabel>
 
       <FloatingLabel controlId="floatingInput3" label="Due Date" className="mb-3">
-        <Form.Control
-          type="text"
-          placeholder="Enter Due Date"
-          name="dueDate"
-          value={formInput.dueDate}
-          onChange={handleChange}
-          required
-        />
+        <Form.Control type="text" placeholder="Enter Due Date" name="dueDate" value={formInput.dueDate} onChange={handleChange} required />
       </FloatingLabel>
 
       <FloatingLabel controlId="floatingSelect" label="Bill">
-        <Form.Select
-          aria-label="Bill"
-          name="billId"
-          onChange={handleChange}
-          className="mb-3"
-          required
-        >
+        <Form.Select aria-label="Bill" name="billId" onChange={handleChange} className="mb-3" required>
           <option value="">Select a Bill</option>
-          {
-              bills.map((bill) => (
-                <option
-                  key={bill.firebaseKey}
-                  value={bill.firebaseKey}
-                  selected={obj.billId === bill.firebaseKey}
-                >
-                  {bill.billName}
-                </option>
-              ))
-            }
+          {bills.map((bill) => (
+            <option key={bill.firebaseKey} value={bill.firebaseKey} selected={formInput.billId === bill.firebaseKey}>
+              {bill.billName}
+            </option>
+          ))}
         </Form.Select>
+        <Form.Check
+          className="text-black mb-3"
+          type="switch"
+          id="paid"
+          name="paid"
+          label="Paid"
+          checked={formInput.paid}
+          onChange={(e) => {
+            setFormInput((prevState) => ({
+              ...prevState,
+              paid: e.target.checked,
+            }));
+          }}
+        />
       </FloatingLabel>
 
-      <Button type="submit">{obj.firebaseKey ? 'Update' : 'Create'} a Person</Button>
+      <Button type="submit">{formInput.firebaseKey ? 'Update' : 'Create'} a Person</Button>
     </Form>
   );
 }
@@ -116,6 +96,7 @@ PeopleForm.propTypes = {
     name: PropTypes.string,
     amount: PropTypes.string,
     dueDate: PropTypes.string,
+    paid: PropTypes.string,
     firebaseKey: PropTypes.string,
     billId: PropTypes.string,
   }),

@@ -4,18 +4,19 @@ import { deleteSinglePeoples, getSinglePeoples } from './peopleData';
 const getBillAndPeople = (billFirebaseKey) => new Promise((resolve, reject) => {
   getBillPeoples(billFirebaseKey)
     .then((billObj) => {
-      getBillAndPeople(billObj.firebaseKey)
-        .then((peopleObj) => {
-          resolve({ peopleObj, ...billObj });
-        });
-    }).catch((error) => reject(error));
+      getBillAndPeople(billObj.firebaseKey).then((peopleObj) => {
+        resolve({ peopleObj, ...billObj });
+      });
+    })
+    .catch((error) => reject(error));
 });
 
-const viewBillDetails = (billFirebaseKey) => new Promise((resolve, reject) => {
+const getBillWithPeople = (billFirebaseKey) => new Promise((resolve, reject) => {
   Promise.all([getSinglePeoples(billFirebaseKey), getBillPeoples(billFirebaseKey)])
     .then(([billObj, billPeoplesArr]) => {
       resolve({ ...billObj, peoples: billPeoplesArr });
-    }).catch((error) => reject(error));
+    })
+    .catch((error) => reject(error));
 });
 
 const deleteBillPeoples = (billId) => new Promise((resolve, reject) => {
@@ -29,8 +30,4 @@ const deleteBillPeoples = (billId) => new Promise((resolve, reject) => {
     })
     .catch((error) => reject(error));
 });
-export {
-  getBillAndPeople,
-  viewBillDetails,
-  deleteBillPeoples,
-};
+export { getBillAndPeople, getBillWithPeople as viewBillDetails, deleteBillPeoples };

@@ -5,49 +5,58 @@ import {
 import PropTypes from 'prop-types';
 import Button from 'react-bootstrap/Button';
 import Link from 'next/link';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import { deleteBillPeoples, viewBillDetails } from '../api/mergedData';
+import { deleteBillPeoples } from '../api/mergedData';
 import PeopleCard from './PeopleCard';
+import { getBillPeoples } from '../api/billData';
 
 ChartJS.register(ArcElement, Legend, Tooltip);
 
-function DoughnutChart({ billObj, onUpdate }) {
+export function BillChart({ bill }) {
   const router = useRouter();
   const [billPeoples, setBillPeoples] = useState([]);
-  const { firebaseKey } = router.query;
+  const firebaseKey = router.query?.firebaseKey || bill.firebaseKey;
   // eslint-disable-next-line no-bitwise
-  const colors = new Array(billObj.splitValues.length).fill().map(() => `#${(Math.random() * 0xFFFFFF << 0).toString(16).padStart(6, '0')}`);
-  // const arr = billObj.splitValues || [];
+  const colors = new Array(bill.splitValues.length).fill().map(() => `#${((Math.random() * 0xffffff) << 0).toString(16).padStart(6, '0')}`);
   const data = {
-    labels: [billObj.totalAmount],
+    labels: [bill.totalAmount],
     datasets: [
       {
-        data: billObj.splitValues,
+        data: bill.splitValues,
         backgroundColor: colors,
       },
     ],
   };
 
   const deleteThisBill = () => {
-    if (window.confirm(`Delete ${billObj.billName}?`)) {
-      deleteBillPeoples(billObj.firebaseKey).then(() => onUpdate());
+    if (window.confirm(`Delete ${bill.billName}?`)) {
+      deleteBillPeoples(bill.firebaseKey).then(() => router.reload(window.location.pathname));
     }
   };
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const getBillPeoplesData = useCallback(() => {
+    getBillPeoples(firebaseKey).then((res) => {
+      setBillPeoples(res);
+    });
+  });
+
   useEffect(() => {
-    viewBillDetails(firebaseKey).then(setBillPeoples);
+    getBillPeoplesData(useCallback);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [firebaseKey]);
 
   return (
     <>
       <div>
-        <h1>{billObj.billName}</h1>
-        <h2>Bill Due Date: {billObj.dueDate}</h2>
+        <h1>{bill.billName}</h1>
+        <h2>Bill Due Date: {bill.dueDate}</h2>
         <div style={{ width: '500px' }}>
           <Doughnut data={data} />
         </div>
-        <Link href={`/bill/edit/${billObj.firebaseKey}`} passHref>
+
+        <Link href={`/bill/edit/${bill.firebaseKey}`} passHref>
           <Button variant="">EDIT</Button>
         </Link>
         <Button variant="" onClick={deleteThisBill} className="m-2">
@@ -58,14 +67,10 @@ function DoughnutChart({ billObj, onUpdate }) {
           <Button variant="">Add a person</Button>
         </Link>
 
-        <Link href={`/bill/${billObj.firebaseKey}`} passHref>
-          <Button variant="">people</Button>
-        </Link>
-
         <div className="text-center my-4">
           <div className="d-flex flex-wrap justify-content-center">
-            {billPeoples?.peoples?.map((people) => (
-              <PeopleCard key={people.firebaseKey} peopleObj={people} onUpdate={setBillPeoples} />
+            {billPeoples?.map((people) => (
+              <PeopleCard key={people.firebaseKey} peopleObj={people} onUpdate={getBillPeoplesData} />
             ))}
           </div>
         </div>
@@ -74,17 +79,16 @@ function DoughnutChart({ billObj, onUpdate }) {
   );
 }
 
-DoughnutChart.propTypes = {
-  billObj: PropTypes.shape({
+BillChart.propTypes = {
+  bill: PropTypes.shape({
     billName: PropTypes.string,
     totalAmount: PropTypes.string,
-    splitValues: PropTypes.string,
+    splitValues: PropTypes.arrayOf(PropTypes.number),
     dueDate: PropTypes.string,
     splitAmount: PropTypes.string,
     firebaseKey: PropTypes.string,
     uid: PropTypes.string,
   }).isRequired,
-  onUpdate: PropTypes.func.isRequired,
 };
 
-export default DoughnutChart;
+export default BillChart;
