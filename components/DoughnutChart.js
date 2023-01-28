@@ -15,29 +15,29 @@ ChartJS.register(ArcElement, Legend, Tooltip);
 
 export function BillChart({ bill }) {
   const router = useRouter();
-  const [billPeoples, setBillPeoples] = useState([]);
-  const firebaseKey = router.query?.firebaseKey || bill.firebaseKey;
+  const [billPeoples, setBillPeoples] = useState(null);
+  // const firebaseKey = router.query?.firebaseKey || bill.user.id;
   // eslint-disable-next-line no-bitwise
-  const colors = new Array(bill.splitValues.length).fill().map(() => `#${((Math.random() * 0xffffff) << 0).toString(16).padStart(6, '0')}`);
+  const colors = new Array(bill.split_amount.length).fill().map(() => `#${((Math.random() * 0xffffff) << 0).toString(16).padStart(6, '0')}`);
   const data = {
-    labels: [bill.totalAmount],
+    labels: [bill.total_amount],
     datasets: [
       {
-        data: bill.splitValues,
+        data: bill.split_amount,
         backgroundColor: colors,
       },
     ],
   };
 
   const deleteThisBill = () => {
-    if (window.confirm(`Delete ${bill.billName}?`)) {
+    if (window.confirm(`Delete ${bill.name}?`)) {
       deleteBillPeoples(bill.firebaseKey).then(() => router.reload(window.location.pathname));
     }
   };
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const getBillPeoplesData = useCallback(() => {
-    getBillPeoples(firebaseKey).then((res) => {
+    getBillPeoples().then((res) => {
       setBillPeoples(res);
     });
   });
@@ -45,13 +45,13 @@ export function BillChart({ bill }) {
   useEffect(() => {
     getBillPeoplesData(useCallback);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [firebaseKey]);
+  }, []);
 
   return (
     <>
       <div>
-        <h1>{bill.billName}</h1>
-        <h2>Bill Due Date: {bill.dueDate}</h2>
+        <h1>{bill.name}</h1>
+        <h2>Bill Due Date: {bill.due_date}</h2>
         <div style={{ width: '500px' }}>
           <Doughnut data={data} />
         </div>
@@ -69,9 +69,11 @@ export function BillChart({ bill }) {
 
         <div className="text-center my-4">
           <div className="d-flex flex-wrap justify-content-center">
-            {billPeoples?.map((people) => (
+            {/* {billPeoples?.map((people) => (
               <PeopleCard key={people.firebaseKey} peopleObj={people} onUpdate={getBillPeoplesData} />
-            ))}
+            ))} */}
+            {billPeoples
+              && <PeopleCard key={billPeoples.id} peopleObj={billPeoples} onUpdate={getBillPeoplesData} />}
           </div>
         </div>
       </div>
@@ -81,11 +83,11 @@ export function BillChart({ bill }) {
 
 BillChart.propTypes = {
   bill: PropTypes.shape({
-    billName: PropTypes.string,
-    totalAmount: PropTypes.string,
+    name: PropTypes.string,
+    total_amount: PropTypes.string,
     splitValues: PropTypes.arrayOf(PropTypes.number),
-    dueDate: PropTypes.string,
-    splitAmount: PropTypes.string,
+    due_date: PropTypes.string,
+    split_amount: PropTypes.string,
     firebaseKey: PropTypes.string,
     uid: PropTypes.string,
   }).isRequired,

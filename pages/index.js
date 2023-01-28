@@ -12,7 +12,7 @@ function Home() {
   const fetchBills = async () => {
     const newBills = await getBills(user.uid);
     setBills(newBills);
-    if (!bills.length && newBills.length) {
+    if (bills && !bills.length && newBills && newBills.length) {
       setSelectedBill(newBills[0]);
     }
   };
@@ -30,14 +30,14 @@ function Home() {
         </Dropdown.Toggle>
 
         <Dropdown.Menu>
-          {bills.map((bill, idx) => (
+          {bills && bills.map((bill, idx) => (
             <Dropdown.Item
               eventKey={idx}
               onClick={() => {
                 setSelectedBill(bill);
               }}
             >
-              {bill.billName}
+              {bill.name}
             </Dropdown.Item>
           ))}
         </Dropdown.Menu>

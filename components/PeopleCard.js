@@ -6,6 +6,7 @@ import PropTypes from 'prop-types';
 import { deleteSinglePeoples } from '../api/peopleData';
 
 function PeopleCard({ peopleObj, onUpdate }) {
+  console.log('PeopleCard ===', peopleObj);
   const deleteThisPerson = () => {
     if (window.confirm(`Delete ${peopleObj.name}?`)) {
       deleteSinglePeoples(peopleObj.firebaseKey).then(() => onUpdate());
@@ -17,10 +18,10 @@ function PeopleCard({ peopleObj, onUpdate }) {
       <Card.Body>
         <Card.Title>{peopleObj.name}</Card.Title>
         <Card.Text>Amount owed: ${peopleObj.amount}</Card.Text>
-        <Card.Text>Due date: {peopleObj.dueDate}</Card.Text>
-        <Card.Text>{peopleObj.paid ? 'Paid' : ''}</Card.Text>
+        <Card.Text>Due date: {peopleObj.due_date}</Card.Text>
+        <Card.Text>{peopleObj.status ? 'Paid' : ''}</Card.Text>
 
-        <Link href={{ pathname: `/people/edit/${peopleObj.firebaseKey}`, query: { obj: JSON.stringify(peopleObj) } }} passHref>
+        <Link href={{ pathname: `/peoples/edit/${peopleObj.firebaseKey}`, query: { obj: JSON.stringify(peopleObj) } }} passHref>
           <Button variant="info">EDIT</Button>
         </Link>
         <Button variant="danger" onClick={deleteThisPerson} className="m-2">
@@ -35,8 +36,8 @@ PeopleCard.propTypes = {
   peopleObj: PropTypes.shape({
     name: PropTypes.string,
     amount: PropTypes.string,
-    dueDate: PropTypes.string,
-    paid: PropTypes.string,
+    due_date: PropTypes.string,
+    status: PropTypes.string,
     firebaseKey: PropTypes.string,
     uid: PropTypes.string,
     billId: PropTypes.string,

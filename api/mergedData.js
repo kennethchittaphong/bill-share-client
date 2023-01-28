@@ -1,8 +1,8 @@
-import { getBillPeoples, deleteBill } from './billData';
+import { getBillPeoples } from './billData';
 import { deleteSinglePeoples, getSinglePeoples } from './peopleData';
 
-const getBillAndPeople = (billFirebaseKey) => new Promise((resolve, reject) => {
-  getBillPeoples(billFirebaseKey)
+const getBillAndPeople = (billId) => new Promise((resolve, reject) => {
+  getBillPeoples(billId)
     .then((billObj) => {
       getBillAndPeople(billObj.firebaseKey).then((peopleObj) => {
         resolve({ peopleObj, ...billObj });
@@ -11,8 +11,8 @@ const getBillAndPeople = (billFirebaseKey) => new Promise((resolve, reject) => {
     .catch((error) => reject(error));
 });
 
-const getBillWithPeople = (billFirebaseKey) => new Promise((resolve, reject) => {
-  Promise.all([getSinglePeoples(billFirebaseKey), getBillPeoples(billFirebaseKey)])
+const getBillWithPeople = (billId) => new Promise((resolve, reject) => {
+  Promise.all([getSinglePeoples(billId), getBillPeoples(billId)])
     .then(([billObj, billPeoplesArr]) => {
       resolve({ ...billObj, peoples: billPeoplesArr });
     })
@@ -22,12 +22,10 @@ const getBillWithPeople = (billFirebaseKey) => new Promise((resolve, reject) => 
 const deleteBillPeoples = (billId) => new Promise((resolve, reject) => {
   getBillPeoples(billId)
     .then((peoplesArray) => {
-      const deletePeoplePromises = peoplesArray.map((people) => deleteSinglePeoples(people.firebaseKey));
-
-      Promise.all(deletePeoplePromises).then(() => {
-        deleteBill(billId).then(resolve);
+      const deletePeoplesPromises = peoplesArray.map((people) => deleteSinglePeoples(people.id));
+      Promise.all(deletePeoplesPromises).then(() => {
+        deleteSinglePeoples(billId).then(resolve);
       });
-    })
-    .catch((error) => reject(error));
+    }).catch((error) => reject(error));
 });
 export { getBillAndPeople, getBillWithPeople as viewBillDetails, deleteBillPeoples };

@@ -8,9 +8,9 @@ import { useAuth } from '../utils/context/authContext';
 import { createBill, updateBill } from '../api/billData';
 
 const initialState = {
-  billName: '',
-  totalAmount: '',
-  dueDate: '',
+  name: '',
+  total_amount: '',
+  due_date: '',
   billId: '',
 };
 

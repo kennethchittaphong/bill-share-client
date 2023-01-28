@@ -4,26 +4,26 @@ import PropTypes from 'prop-types';
 import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import Form from 'react-bootstrap/Form';
 import { Button } from 'react-bootstrap';
-import { useAuth } from '../utils/context/authContext';
 import { updatePeoples, createPeoples } from '../api/peopleData';
 import { getBills } from '../api/billData';
 
 const initialState = {
   name: '',
   amount: '',
-  dueDate: '',
+  due_date: '',
+  status: '',
 };
 
 function PeopleForm({ obj }) {
   const [formInput, setFormInput] = useState(initialState);
   const router = useRouter();
   const [bills, setBills] = useState([]);
-  const { user } = useAuth();
+  // const { user } = useAuth();
 
   useEffect(() => {
-    getBills(user.uid).then(setBills);
-    if (obj.firebaseKey) setFormInput(obj);
-  }, [obj, user]);
+    getBills().then(setBills);
+    if (obj.id) setFormInput(obj);
+  }, [obj]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -35,10 +35,16 @@ function PeopleForm({ obj }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (formInput.firebaseKey) {
+    if (formInput.id) {
       updatePeoples(formInput).then(() => router.push('/'));
     } else {
-      const payload = { ...formInput, uid: user.uid };
+      const payload = {
+        user: parseInt(formInput.billId, 10),
+        name: formInput.name,
+        due_date: formInput.due_date,
+        amount: parseInt(formInput.amount, 10),
+        status: formInput.status,
+      };
       createPeoples(payload).then(() => {
         router.push('/');
       });
@@ -47,7 +53,7 @@ function PeopleForm({ obj }) {
 
   return (
     <Form onSubmit={handleSubmit}>
-      <h2 className="text-white mt-5">{formInput.firebaseKey ? 'Update' : 'Create'} a Person</h2>
+      <h2 className="text-white mt-5">{formInput.id ? 'Update' : 'Create'} a Person</h2>
 
       <FloatingLabel controlId="floatingInput1" label="Name" className="mb-3">
         <Form.Control type="text" placeholder="Enter Name" name="name" value={formInput.name} onChange={handleChange} required />
@@ -58,35 +64,35 @@ function PeopleForm({ obj }) {
       </FloatingLabel>
 
       <FloatingLabel controlId="floatingInput3" label="Due Date" className="mb-3">
-        <Form.Control type="text" placeholder="Enter Due Date" name="dueDate" value={formInput.dueDate} onChange={handleChange} required />
+        <Form.Control type="text" placeholder="Enter Due Date" name="due_date" value={formInput.due_date} onChange={handleChange} required />
       </FloatingLabel>
 
       <FloatingLabel controlId="floatingSelect" label="Bill">
         <Form.Select aria-label="Bill" name="billId" onChange={handleChange} className="mb-3" required>
           <option value="">Select a Bill</option>
           {bills.map((bill) => (
-            <option key={bill.firebaseKey} value={bill.firebaseKey} selected={formInput.billId === bill.firebaseKey}>
-              {bill.billName}
+            <option key={bill.id} value={bill.id} selected={formInput.billId === bill.id}>
+              {bill.name}
             </option>
           ))}
         </Form.Select>
         <Form.Check
           className="text-black mb-3"
           type="switch"
-          id="paid"
-          name="paid"
+          id="status"
+          name="status"
           label="Paid"
-          checked={formInput.paid}
+          checked={formInput.status}
           onChange={(e) => {
             setFormInput((prevState) => ({
               ...prevState,
-              paid: e.target.checked,
+              status: e.target.checked,
             }));
           }}
         />
       </FloatingLabel>
 
-      <Button type="submit">{formInput.firebaseKey ? 'Update' : 'Create'} a Person</Button>
+      <Button type="submit">{formInput.id ? 'Update' : 'Create'} a Person</Button>
     </Form>
   );
 }
@@ -95,9 +101,9 @@ PeopleForm.propTypes = {
   obj: PropTypes.shape({
     name: PropTypes.string,
     amount: PropTypes.string,
-    dueDate: PropTypes.string,
-    paid: PropTypes.string,
-    firebaseKey: PropTypes.string,
+    due_date: PropTypes.string,
+    status: PropTypes.string,
+    id: PropTypes.string,
     billId: PropTypes.string,
   }),
 };
