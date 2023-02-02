@@ -12,6 +12,8 @@ function Home() {
   const fetchBills = async () => {
     const newBills = await getBills(user.uid);
     setBills(newBills);
+    // eslint-disable-next-line no-console
+    console.log('get bills ===', newBills);
     if (bills && !bills.length && newBills && newBills.length) {
       setSelectedBill(newBills[0]);
     }

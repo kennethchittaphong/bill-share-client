@@ -18,7 +18,7 @@ export function BillChart({ bill }) {
   const [billPeoples, setBillPeoples] = useState(null);
   // const firebaseKey = router.query?.firebaseKey || bill.user.id;
   // eslint-disable-next-line no-bitwise
-  const colors = new Array(bill.split_amount.length).fill().map(() => `#${((Math.random() * 0xffffff) << 0).toString(16).padStart(6, '0')}`);
+  const colors = new Array(bill && bill.split_amount.length).fill().map(() => `#${((Math.random() * 0xffffff) << 0).toString(16).padStart(6, '0')}`);
   const data = {
     labels: [bill.total_amount],
     datasets: [
@@ -31,13 +31,13 @@ export function BillChart({ bill }) {
 
   const deleteThisBill = () => {
     if (window.confirm(`Delete ${bill.name}?`)) {
-      deleteBillPeoples(bill.firebaseKey).then(() => router.reload(window.location.pathname));
+      deleteBillPeoples(bill.id).then(() => router.reload(window.location.pathname));
     }
   };
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const getBillPeoplesData = useCallback(() => {
-    getBillPeoples().then((res) => {
+    getBillPeoples(bill.id).then((res) => {
       setBillPeoples(res);
     });
   });
@@ -45,7 +45,7 @@ export function BillChart({ bill }) {
   useEffect(() => {
     getBillPeoplesData(useCallback);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [bill]);
 
   return (
     <>
@@ -56,12 +56,16 @@ export function BillChart({ bill }) {
           <Doughnut data={data} />
         </div>
 
-        <Link href={`/bill/edit/${bill.firebaseKey}`} passHref>
+        <Link href={`/bill/edit/${bill.id}`} passHref>
           <Button variant="">EDIT</Button>
         </Link>
         <Button variant="" onClick={deleteThisBill} className="m-2">
           DELETE
         </Button>
+
+        <Link href="/payment" passHref>
+          <Button variant="">Payment History</Button>
+        </Link>
 
         <Link href="/people/new" passHref>
           <Button variant="">Add a person</Button>
@@ -69,11 +73,11 @@ export function BillChart({ bill }) {
 
         <div className="text-center my-4">
           <div className="d-flex flex-wrap justify-content-center">
-            {/* {billPeoples?.map((people) => (
-              <PeopleCard key={people.firebaseKey} peopleObj={people} onUpdate={getBillPeoplesData} />
-            ))} */}
-            {billPeoples
-              && <PeopleCard key={billPeoples.id} peopleObj={billPeoples} onUpdate={getBillPeoplesData} />}
+            {billPeoples && billPeoples.length && billPeoples?.map((billPeople) => (
+              <PeopleCard key={billPeople.id} peopleObj={billPeople} onUpdate={getBillPeoplesData} />
+            ))}
+            {/* {billPeoples
+              && <PeopleCard key={billPeoples.bill} peopleObj={billPeoples} onUpdate={getBillPeoplesData} />} */}
           </div>
         </div>
       </div>
@@ -88,8 +92,8 @@ BillChart.propTypes = {
     splitValues: PropTypes.arrayOf(PropTypes.number),
     due_date: PropTypes.string,
     split_amount: PropTypes.string,
-    firebaseKey: PropTypes.string,
-    uid: PropTypes.string,
+    billId: PropTypes.string,
+    id: PropTypes.string,
   }).isRequired,
 };
 

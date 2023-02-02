@@ -11,7 +11,7 @@ const initialState = {
   name: '',
   total_amount: '',
   due_date: '',
-  billId: '',
+  bill_id: '',
 };
 
 function BillForm({ obj }) {
@@ -51,9 +51,9 @@ function BillForm({ obj }) {
   };
 
   useEffect(() => {
-    if (obj?.firebaseKey) {
+    if (obj?.id) {
       setFormInput(obj);
-      setInputFields(obj.splitValues);
+      setInputFields(obj.split_amount);
     }
   }, [obj, user]);
 
@@ -65,13 +65,15 @@ function BillForm({ obj }) {
       splitValues.push(parseInt(element, 10));
     }
     const payload = {
-      ...formInput, uid: user.uid, userDisplayName: user.displayName, splitValues,
+      ...formInput, uid: user.uid, userDisplayName: user.name, splitValues, user: 1,
     };
-    if (obj.firebaseKey) {
+    if (obj.id) {
       updateBill(payload)
         .then(() => router.push('/'));
     } else {
       // const totalAmount = formInput.totalAmount && formInput.totalAmount.split(',');
+      // eslint-disable-next-line no-console
+      console.log('form data ===', payload);
       createBill(payload).then(() => {
         router.push('/');
       });
@@ -81,14 +83,14 @@ function BillForm({ obj }) {
   return (
     <div>
       <Form onSubmit={handleSubmit}>
-        <h1 className="title mt-5">{obj?.firebaseKey ? 'Update' : 'Add'} a Bill</h1>
+        <h1 className="title mt-5">{obj?.id ? 'Update' : 'Add'} a Bill</h1>
 
         <FloatingLabel controlId="floatingInput1" label="Bill Name" className="mb-3">
           <Form.Control
             type="text"
             placeholder="Enter Name"
-            name="billName"
-            value={formInput.billName}
+            name="name"
+            value={formInput.name}
             onChange={handleChange}
             required
           />
@@ -98,8 +100,8 @@ function BillForm({ obj }) {
           <Form.Control
             type="text"
             placeholder="Enter Due Date"
-            name="dueDate"
-            value={formInput.dueDate}
+            name="due_date"
+            value={formInput.due_date}
             onChange={handleChange}
             required
           />
@@ -109,8 +111,8 @@ function BillForm({ obj }) {
           <Form.Control
             type="text"
             placeholder="Enter Total Amount"
-            name="totalAmount"
-            value={formInput.totalAmount}
+            name="total_amount"
+            value={formInput.total_amount}
             onChange={handleChange}
             required
           />
@@ -157,7 +159,7 @@ function BillForm({ obj }) {
           </div>
         </Form>
 
-        <Button type="submit">{obj.firebaseKey ? 'Update' : 'Create'} a Bill</Button>
+        <Button type="submit">{obj.id ? 'Update' : 'Create'} a Bill</Button>
       </Form>
 
     </div>
@@ -166,12 +168,12 @@ function BillForm({ obj }) {
 
 BillForm.propTypes = {
   obj: PropTypes.shape({
-    billName: PropTypes.string,
-    totalAmount: PropTypes.string,
+    name: PropTypes.string,
+    total_amount: PropTypes.string,
     splitValues: PropTypes.string,
-    dueDate: PropTypes.string,
-    splitAmount: PropTypes.string,
-    firebaseKey: PropTypes.string,
+    due_date: PropTypes.string,
+    split_amount: PropTypes.string,
+    id: PropTypes.string,
   }),
 };
 

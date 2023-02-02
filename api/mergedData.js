@@ -1,10 +1,10 @@
-import { getBillPeoples } from './billData';
+import { deleteBill, getBillPeoples } from './billData';
 import { deleteSinglePeoples, getSinglePeoples } from './peopleData';
 
-const getBillAndPeople = (billId) => new Promise((resolve, reject) => {
-  getBillPeoples(billId)
+const getBillAndPeople = (bill) => new Promise((resolve, reject) => {
+  getBillPeoples(bill)
     .then((billObj) => {
-      getBillAndPeople(billObj.firebaseKey).then((peopleObj) => {
+      getBillAndPeople(billObj).then((peopleObj) => {
         resolve({ peopleObj, ...billObj });
       });
     })
@@ -26,6 +26,10 @@ const deleteBillPeoples = (billId) => new Promise((resolve, reject) => {
       Promise.all(deletePeoplesPromises).then(() => {
         deleteSinglePeoples(billId).then(resolve);
       });
+
+      // delete bill api
+      // eslint-disable-next-line no-console
+      deleteBill(billId).then((res) => console.log('delete bill ===', res)).catch((err) => console.log('delete bill error ===', err));
     }).catch((error) => reject(error));
 });
 export { getBillAndPeople, getBillWithPeople as viewBillDetails, deleteBillPeoples };

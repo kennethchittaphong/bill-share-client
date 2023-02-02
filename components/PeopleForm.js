@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import Form from 'react-bootstrap/Form';
 import { Button } from 'react-bootstrap';
+import { useAuth } from '../utils/context/authContext';
 import { updatePeoples, createPeoples } from '../api/peopleData';
 import { getBills } from '../api/billData';
 
@@ -18,12 +19,12 @@ function PeopleForm({ obj }) {
   const [formInput, setFormInput] = useState(initialState);
   const router = useRouter();
   const [bills, setBills] = useState([]);
-  // const { user } = useAuth();
+  const { user } = useAuth();
 
   useEffect(() => {
     getBills().then(setBills);
-    if (obj.id) setFormInput(obj);
-  }, [obj]);
+    if (obj) setFormInput(obj);
+  }, [obj, user]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -36,10 +37,18 @@ function PeopleForm({ obj }) {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (formInput.id) {
-      updatePeoples(formInput).then(() => router.push('/'));
+      const payload = {
+        bill_id: parseInt(formInput.billId, 10),
+        name: formInput.name,
+        due_date: formInput.due_date,
+        total_amount: parseInt(formInput.amount, 10),
+        status: formInput.status,
+        id: formInput.id,
+      };
+      updatePeoples(payload).then(() => router.push('/'));
     } else {
       const payload = {
-        user: parseInt(formInput.billId, 10),
+        bill_id: parseInt(formInput.billId, 10),
         name: formInput.name,
         due_date: formInput.due_date,
         amount: parseInt(formInput.amount, 10),
@@ -103,7 +112,6 @@ PeopleForm.propTypes = {
     amount: PropTypes.string,
     due_date: PropTypes.string,
     status: PropTypes.string,
-    id: PropTypes.string,
     billId: PropTypes.string,
   }),
 };

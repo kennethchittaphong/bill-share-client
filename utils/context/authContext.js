@@ -7,7 +7,7 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import firebase from 'firebase';
+import { firebase } from '../client';
 
 const AuthContext = createContext();
 
@@ -28,7 +28,8 @@ const AuthProvider = (props) => {
       } else {
         setUser(false);
       }
-    }); // creates a single global listener for auth state changed
+    });
+    // creates a single global listener for auth state changed
   }, []);
 
   const value = useMemo( // https://reactjs.org/docs/hooks-reference.html#usememo

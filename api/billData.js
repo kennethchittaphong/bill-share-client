@@ -1,5 +1,7 @@
 import { clientCredentials } from '../utils/client';
 
+const dbUrl = clientCredentials.databaseURL;
+
 const getBills = () => new Promise((resolve, reject) => {
   fetch(`${clientCredentials.databaseURL}/bills`)
     .then((response) => response.json())
@@ -10,22 +12,23 @@ const getBills = () => new Promise((resolve, reject) => {
 // GET SINGLE BILL
 const getSingleBill = (id) => new Promise((resolve, reject) => {
   fetch(`${clientCredentials.databaseURL}/bills/${id}`)
-    .then((response) => resolve(response.data))
+    .then((response) => response.json()).then((data) => resolve(data))
     .catch(reject);
 });
 
 // CREATE BILL
-const createBill = (bill) => new Promise((resolve, reject) => {
-  const billObj = {
-    bill_name: bill.name,
-    due_date: bill.dueDate,
-    total_amount: bill.totalAmount,
-    split_amount: bill.splitAmount,
-    status: bill.status,
-  };
+const createBill = (payload) => new Promise((resolve, reject) => {
   fetch(`${clientCredentials.databaseURL}/bills`, {
     method: 'POST',
-    body: JSON.stringify(billObj),
+    body: JSON.stringify({
+      uid: payload.uid,
+      name: payload.name,
+      total_amount: payload.total_amount,
+      due_date: payload.due_date,
+      split_amount: payload.splitValues,
+      status: payload.status,
+      user: payload.user,
+    }),
     headers: {
       'content-type': 'application/json',
     },
@@ -35,24 +38,35 @@ const createBill = (bill) => new Promise((resolve, reject) => {
 });
 
 // UPDATE BILL
-const updateBill = (billObj) => new Promise((resolve, reject) => {
-  fetch(`${clientCredentials.databaseURL}/bills/${billObj.firebaseKey}.json`, billObj)
-    .then(() => getBills(billObj.uid).then(resolve))
-    .catch(reject);
-});
+const updateBill = (billObj) => fetch(`http://localhost:8000/bills/${billObj.id}`, {
+  method: 'PUT',
+  headers: {
+    'Content-Type': 'application/json',
+    Accept: 'application/json',
+  },
+  body: JSON.stringify(billObj),
+})
+  .then((response) => response.json())
+  .then((data) => {
+    console.warn('Success:', data);
+  })
+  .catch((error) => {
+    console.error('Error:', error);
+  });
 
 // DELETE BILL
-// eslint-disable-next-line no-unused-vars
-const deleteBill = (firebaseKey, billId) => new Promise((resolve, reject) => {
-  fetch(`${clientCredentials.databaseURL}/bills/${firebaseKey}.json`)
-    .then(() => {
-      getBills().then((billsArr) => resolve(billsArr));
-    })
-    .catch((error) => reject(error));
+const deleteBill = (billId) => new Promise((resolve, reject) => {
+  fetch(`${dbUrl}/bills/${billId}`, {
+    method: 'DELETE',
+  }).then(resolve).catch(reject);
 });
 
-// const getBillPeoples = (id) => fetch(`${clientCredentials.databaseURL}/peoples/${id}`).then((response) => (response.data ? Object.values(response.data) : []));
-const getBillPeoples = (id) => fetch(`${clientCredentials.databaseURL}/peoples/${id}`).then((response) => response.json()).then((res) => res);
+const getBillPeoples = (billId) => new Promise((resolve, reject) => {
+  fetch(`${clientCredentials.databaseURL}/peoples?billId=${billId}`)
+    .then((response) => response.json())
+    .then(resolve)
+    .catch(reject);
+});
 
 export {
   deleteBill, updateBill, createBill, getBills, getSingleBill, getBillPeoples,

@@ -5,12 +5,14 @@ import PeopleForm from '../../../components/PeopleForm';
 
 export default function EditPeople() {
   const router = useRouter();
-  const [editPeoples, setEditPeoples] = useState(JSON.parse(router.query.obj));
-  const { firebaseKey } = router.query;
+  const [editPeoples, setEditPeoples] = useState(router.query.id);
+  const { id } = router.query;
+  // eslint-disable-next-line no-console
+  console.log('edit people ===', id);
 
   useEffect(() => {
-    getSinglePeoples(firebaseKey).then(setEditPeoples);
-  }, [firebaseKey]);
+    getSinglePeoples(id).then(setEditPeoples);
+  }, [id]);
   return (
     <PeopleForm obj={editPeoples} />
   );

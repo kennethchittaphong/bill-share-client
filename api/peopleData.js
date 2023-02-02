@@ -1,70 +1,61 @@
 import { clientCredentials } from '../utils/client';
 
-const getPeoples = (uid) => new Promise((resolve, reject) => {
-  fetch(`${clientCredentials.databaseURL}/peoples/${uid}`)
-    .then((response) => {
-      if (response.data) {
-        resolve(Object.values(response.data));
-      } else {
-        resolve([]);
-      }
-    })
-    .catch((error) => reject(error));
-});
-
-const deleteSinglePeoples = (firebaseKey) => new Promise((resolve, reject) => {
-  fetch(`${clientCredentials.databaseURL}/peoples/${firebaseKey}.json`)
-    .then(() => {
-      getPeoples().then((peoplesArray) => resolve(peoplesArray));
-    })
-    .catch(reject);
-});
-
-const createPeoples = (peopleObj) => new Promise((resolve, reject) => {
-  // fetch(`${clientCredentials.databaseURL}/peoples`, peopleObj)
-  //   // .then((res) => res.json())
-  //   .then((response) => {
-  //     console.log('create people log ===', response);
-  //     // const payload = { billId: response.data.name };
-  //     // fetch(`${clientCredentials.databaseURL}/peoples/${response.data.name}.json`, payload)
-  //     //   .then(() => {
-  //     //     getPeoples(uid).then((peoplesArr) => resolve(peoplesArr));
-  //     //   });
-  //   }).catch(reject);
-
-  const myHeaders = new Headers();
-  myHeaders.append('Content-Type', 'application/json');
-
-  const raw = JSON.stringify(peopleObj);
-
-  const requestOptions = {
-    method: 'POST',
-    headers: myHeaders,
-    body: raw,
-    redirect: 'follow',
-  };
-
-  fetch(`${clientCredentials.databaseURL}/peoples`, requestOptions)
+const getPeoples = (id) => new Promise((resolve, reject) => {
+  fetch(`${clientCredentials.databaseURL}/peoples/${id}`)
     .then((response) => response.json())
-    .then((result) => {
-      console.log('result ===', result);
-      resolve();
-    })
-    .catch((error) => {
-      console.log('error', error);
-      reject();
-    });
-});
-
-const updatePeoples = (peopleObj) => new Promise((resolve, reject) => {
-  fetch(`${clientCredentials.databaseURL}/peoples/${peopleObj.firebaseKey}.json`, peopleObj)
     .then(resolve)
     .catch(reject);
 });
 
-const getSinglePeoples = (firebaseKey) => new Promise((resolve, reject) => {
-  fetch(`${clientCredentials.databaseURL}/peoples.json?orderBy="billId"&equalTo="${firebaseKey}"`)
-    .then((response) => resolve(Object.values(response.data)))
+const deleteSinglePeoples = (id) => fetch(`http://localhost:8000/peoples/${id}`, {
+  method: 'DELETE',
+});
+
+// CREATE People
+const createPeoples = (billId) => fetch(`${clientCredentials.databaseURL}/peoples`, {
+  method: 'POST',
+  body: JSON.stringify(billId),
+  headers: {
+    'Content-Type': 'application/json',
+    Accept: 'application/json',
+  },
+})
+  .then((resp) => resp.json())
+  .catch((error) => {
+    console.error('Error:', error);
+  });
+
+// UPDATE People
+const updatePeoples = (people) => fetch(`http://localhost:8000/peoples/${people.id}`, {
+  method: 'PUT',
+  headers: {
+    'Content-Type': 'application/json',
+    Accept: 'application/json',
+  },
+  body: JSON.stringify(people),
+})
+  .then((response) => response.json())
+  .then((data) => {
+    console.warn('Success:', data);
+  })
+  .catch((error) => {
+    console.error('Error:', error);
+  });
+
+// GET Single People
+const getSinglePeoples = (billId) => new Promise((resolve, reject) => {
+  fetch(`${clientCredentials.databaseURL}/peoples/${billId}`)
+    .then((response) => response.json())
+    .then((data) => {
+      resolve({
+        id: data.id,
+        billId: data.bill_id,
+        name: data.name,
+        amount: data.amount,
+        due_date: data.due_date,
+        status: data.status,
+      });
+    })
     .catch((error) => reject(error));
 });
 

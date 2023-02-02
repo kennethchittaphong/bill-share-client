@@ -6,10 +6,11 @@ import PropTypes from 'prop-types';
 import { deleteSinglePeoples } from '../api/peopleData';
 
 function PeopleCard({ peopleObj, onUpdate }) {
-  console.log('PeopleCard ===', peopleObj);
+  // eslint-disable-next-line no-console
+  console.log('people card ===', peopleObj);
   const deleteThisPerson = () => {
     if (window.confirm(`Delete ${peopleObj.name}?`)) {
-      deleteSinglePeoples(peopleObj.firebaseKey).then(() => onUpdate());
+      deleteSinglePeoples(peopleObj.id).then(() => onUpdate());
     }
   };
 
@@ -21,7 +22,8 @@ function PeopleCard({ peopleObj, onUpdate }) {
         <Card.Text>Due date: {peopleObj.due_date}</Card.Text>
         <Card.Text>{peopleObj.status ? 'Paid' : ''}</Card.Text>
 
-        <Link href={{ pathname: `/peoples/edit/${peopleObj.firebaseKey}`, query: { obj: JSON.stringify(peopleObj) } }} passHref>
+        {/* <Link href={`peoples/edit/${peopleObj.id}`} passHref> */}
+        <Link href={{ pathname: `people/edit/${peopleObj.id}`, query: { id: peopleObj.id } }} passHref>
           <Button variant="info">EDIT</Button>
         </Link>
         <Button variant="danger" onClick={deleteThisPerson} className="m-2">
@@ -38,9 +40,9 @@ PeopleCard.propTypes = {
     amount: PropTypes.string,
     due_date: PropTypes.string,
     status: PropTypes.string,
-    firebaseKey: PropTypes.string,
+    id: PropTypes.string,
     uid: PropTypes.string,
-    billId: PropTypes.string,
+    bill_id: PropTypes.string,
   }).isRequired,
   onUpdate: PropTypes.func.isRequired,
 };
