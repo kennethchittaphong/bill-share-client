@@ -71,7 +71,6 @@ function BillForm({ obj }) {
       updateBill(payload)
         .then(() => router.push('/'));
     } else {
-      // const totalAmount = formInput.totalAmount && formInput.totalAmount.split(',');
       // eslint-disable-next-line no-console
       console.log('form data ===', payload);
       createBill(payload).then(() => {

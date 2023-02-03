@@ -63,7 +63,7 @@ export function BillChart({ bill }) {
           DELETE
         </Button>
 
-        <Link href="/payment" passHref>
+        <Link href={`/payment/${bill.id}`} passHref>
           <Button variant="">Payment History</Button>
         </Link>
 
